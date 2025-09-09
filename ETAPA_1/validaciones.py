@@ -55,10 +55,10 @@ def validar_minuto_evento(minuto):
 
     return 0 <= minuto <= 120
 
-"""Valida que el tipo de evento sea 'Gol', 'Asistencia', 'Tarjeta Amarilla', 'Tarjeta Roja' o 'Expulsión'."""
+"""Valida que el tipo de evento sea 'Gol', 'Asistencia', 'Tarjeta Amarilla' o 'Tarjeta Roja'."""
 def validar_tipo_evento(tipo):
 
-    return tipo in ('Gol', 'Asistencia', 'Tarjeta Amarilla', 'Tarjeta Roja', 'Expulsión')
+    return tipo in ('Gol', 'Asistencia', 'Tarjeta Amarilla', 'Tarjeta Roja')
 
 """Valida que el jugador pertenezca a uno de los equipos del partido y esté habilitado."""
 def validar_jugador_en_partido(jugadores, dorsal, equipo, local, visitante):

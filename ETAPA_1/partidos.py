@@ -162,7 +162,7 @@ def registrar_eventos_partido(resultados, jugadores, equipos, eventos_partidos):
         visitante_abrev = equipos[visitante][1]
         
         print(f"Registrando eventos: {equipos[local][0]} vs {equipos[visitante][0]}")
-        print("Tipos de eventos: Gol, Asistencia, Tarjeta Amarilla, Tarjeta Roja, Expulsión")
+        print("Tipos de eventos: Gol, Asistencia, Tarjeta Amarilla, Tarjeta Roja")
         print("Ingrese minuto -1 para finalizar")
         
         # Lista para almacenar eventos
@@ -176,9 +176,9 @@ def registrar_eventos_partido(resultados, jugadores, equipos, eventos_partidos):
                 while not validaciones.validar_minuto_evento(minuto):
                     minuto = int(input("Minutos inválidos (0-120): "))
                 
-                tipo = input("Ingrese tipo de evento (Gol/Asistencia/Tarjeta Amarilla/Expulsión): ")
+                tipo = input("Ingrese tipo de evento (Gol/Asistencia/Tarjeta Amarilla/Tarjeta Roja): ")
                 while not validaciones.validar_tipo_evento(tipo):
-                    tipo = input("Tipo inválido. Ingrese Gol, Asistencia, Tarjeta Amarilla o Expulsión: ")
+                    tipo = input("Tipo inválido. Ingrese Gol, Asistencia, Tarjeta Amarilla o Tarjeta Roja: ")
                 
                 # Seleccionar equipo
                 print("1. Equipo local")
@@ -197,15 +197,16 @@ def registrar_eventos_partido(resultados, jugadores, equipos, eventos_partidos):
                 
                 # Mostrar jugadores del equipo seleccionado
                 jugadores_equipo = []
+                equipo_abrev_valido = False
                 if equipo_abrev is not None:
+                    equipo_abrev_valido = True
                     for jugador in jugadores:
                         if jugador[3] == equipo_abrev and jugador[4] == 'H':
                             jugadores_equipo.append(jugador)
                 
-                if equipo_abrev is None or len(jugadores_equipo) == 0:
-                    if equipo_abrev is not None:
+                if equipo_abrev_valido == False or len(jugadores_equipo) == 0:
+                    if equipo_abrev_valido:
                         print(f"No hay jugadores habilitados en {equipo_nombre}.")
-                    # saltar registro de este evento
                     registro_valido = False
                 else:
                     registro_valido = True
@@ -222,7 +223,7 @@ def registrar_eventos_partido(resultados, jugadores, equipos, eventos_partidos):
                     dorsal = int(jugadores_equipo[jugador_idx][1])
                     
                     # Aplicar sanciones según el tipo de evento
-                    aplicar_sanciones(jugadores, tipo, dorsal, equipo_abrev)
+                    aplicar_sanciones(jugadores, tipo, dorsal, equipo_abrev, eventos)
                     
                     # Agregar evento a la lista local
                     eventos.append([str(minuto), tipo, str(dorsal), equipo_abrev])
@@ -242,30 +243,41 @@ def registrar_eventos_partido(resultados, jugadores, equipos, eventos_partidos):
             print("=" * 50)
 
 """Aplica sanciones automáticas según el tipo de evento.""" 
-def aplicar_sanciones(jugadores, tipo, dorsal, equipo_abrev):
+def aplicar_sanciones(jugadores, tipo, dorsal, equipo_abrev, eventos_partido_actual):
 
     i = 0
     encontrado = False
     while i < len(jugadores) and not encontrado:
         if int(jugadores[i][1]) == dorsal and jugadores[i][3] == equipo_abrev:
             if tipo == 'Tarjeta Amarilla':  # Tarjeta amarilla
-                tarjetas = int(jugadores[i][5]) + 1  # Incrementar tarjetas amarillas
-                jugadores[i][5] = str(tarjetas)
-                if tarjetas >= 3:  # 3 tarjetas amarillas = 1 fecha de suspensión
+                # Contar tarjetas amarillas en este partido específico
+                amarillas_en_partido = 0
+                for evento in eventos_partido_actual:
+                    if (evento[1] == "Tarjeta Amarilla" and 
+                        evento[2] == str(dorsal) and 
+                        evento[3] == equipo_abrev):
+                        amarillas_en_partido += 1
+                
+                # Si ya tiene una amarilla en este partido, es expulsión por doble amarilla
+                if amarillas_en_partido >= 1:
                     fechas = int(jugadores[i][6]) + 1
-                    jugadores[i][6] = str(fechas)
-                    jugadores[i][7] = "Amarillas"
-                    print(f"Jugador {jugadores[i][0]} suspendido por acumulación de tarjetas amarillas.")
+                    jugadores[i][6] = str(fechas) 
+                    jugadores[i][7] = "Doble Amarilla"
+                    print(f"Jugador {jugadores[i][0]} EXPULSADO por doble amarilla en el mismo partido.")
+                else:
+                    # Primera amarilla del partido
+                    tarjetas = int(jugadores[i][5]) + 1  # Incrementar tarjetas amarillas totales
+                    jugadores[i][5] = str(tarjetas)
+                    if tarjetas >= 3:  # 3 tarjetas amarillas totales = 1 fecha de suspensión
+                        fechas = int(jugadores[i][6]) + 1
+                        jugadores[i][6] = str(fechas)
+                        jugadores[i][7] = "Amarillas"
+                        print(f"Jugador {jugadores[i][0]} suspendido por acumulación de tarjetas amarillas.")
             elif tipo == 'Tarjeta Roja':  # Tarjeta roja
                 fechas = int(jugadores[i][6]) + 1
                 jugadores[i][6] = str(fechas)
                 jugadores[i][7] = "Roja"
                 print(f"Jugador {jugadores[i][0]} suspendido por tarjeta roja.")
-            elif tipo == 'Expulsión':  # Expulsión
-                fechas = int(jugadores[i][6]) + 2  # 2 fechas por expulsión
-                jugadores[i][6] = str(fechas)
-                jugadores[i][7] = "Expulsión"
-                print(f"Jugador {jugadores[i][0]} suspendido por expulsión.")
             encontrado = True
         else:
             i = i + 1

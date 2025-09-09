@@ -11,7 +11,7 @@ def main():
     jugadores = []  
     arbitros = []  
     resultados = []
-    eventos_partidos = []  # Lista global para almacenar todos los eventos de partidos 
+    eventos_partidos = []  # Lista global para almacenar todos los eventos de partidos
     
     opcion = -1
     while opcion != 0:
