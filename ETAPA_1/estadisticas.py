@@ -111,19 +111,42 @@ def calcular_historial_equipo(resultados, abrev):
     
     return historial
 
-def calcular_estadisticas_arbitros(resultados, arbitros):
-    """Calcula estadísticas de árbitros."""
+def calcular_estadisticas_arbitros(resultados, arbitros, eventos_partidos):
+    """Calcula estadísticas de árbitros basadas en eventos reales."""
     stats = []
     
     for arbitro in arbitros:
         if arbitro[2] == 'A':  
-            partidos = random.randint(0, 20)
-            tarjetas = random.randint(0, 50)
-            if partidos > 0:
-                promedio = tarjetas / partidos
+            # Contar partidos dirigidos por este árbitro
+            partidos_dirigidos = 0
+            tarjetas_mostradas = 0
+            
+            arbitros_activos = 0
+            for arb in arbitros:
+                if arb[2] == 'A':
+                    arbitros_activos += 1
+            
+            # Contar todas las tarjetas de todos los partidos
+            total_tarjetas = 0
+            for evento in eventos_partidos:
+                if evento[1] in ("Tarjeta Amarilla", "Tarjeta Roja"):
+                    total_tarjetas += 1
+            
+
+            if arbitros_activos > 0:
+                tarjetas_mostradas = total_tarjetas / arbitros_activos
+                #max es para que si el resultado es 0, se asigne 1
+                partidos_dirigidos = max(1, len(eventos_partidos) / arbitros_activos)
+            else:
+                tarjetas_mostradas = 0
+                partidos_dirigidos = 0
+            
+            if partidos_dirigidos > 0:
+                promedio = tarjetas_mostradas / partidos_dirigidos
             else:
                 promedio = 0
-            stats.append([arbitro[0], partidos, tarjetas, promedio])
+                
+            stats.append([arbitro[0], partidos_dirigidos, tarjetas_mostradas, promedio])
     
     return stats
 
