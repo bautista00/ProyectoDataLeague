@@ -30,7 +30,7 @@ def crear_fixture(equipos, resultados):
         print("Matriz de resultados inicializada. Use 'Actualizar Partidos' para ingresar resultados.")
 
 """Permite actualizar resultados de partidos."""
-def actualizar_partidos(resultados, jugadores, equipos):
+def actualizar_partidos(resultados, jugadores, equipos, eventos_partidos):
     
     if len(resultados) == 0:
         print("No hay fixture creado. Debe crear el fixture primero.")
@@ -61,7 +61,7 @@ def actualizar_partidos(resultados, jugadores, equipos):
                 elif opcion == 2:
                     actualizar_resultado(resultados, equipos_habilitados)
                 elif opcion == 3:
-                    registrar_eventos_partido(resultados, jugadores, equipos_habilitados)
+                    registrar_eventos_partido(resultados, jugadores, equipos_habilitados, eventos_partidos)
                 elif opcion == 0:
                     print("Volviendo al menú de partidos...")
                 else:
@@ -136,7 +136,7 @@ def actualizar_resultado(resultados, equipos):
         print(f"Resultado actualizado: {equipos[local][0]} {resultado} {equipos[visitante][0]}")
 
 """Registra eventos de un partido específico."""
-def registrar_eventos_partido(resultados, jugadores, equipos):
+def registrar_eventos_partido(resultados, jugadores, equipos, eventos_partidos):
     print("=" * 40)
     print("REGISTRAR EVENTOS DE PARTIDO")
     print("=" * 40)
@@ -224,8 +224,10 @@ def registrar_eventos_partido(resultados, jugadores, equipos):
                     # Aplicar sanciones según el tipo de evento
                     aplicar_sanciones(jugadores, tipo, dorsal, equipo_abrev)
                     
-                    # Agregar evento a la lista
-                    eventos.append([minuto, tipo, dorsal, equipo_abrev])
+                    # Agregar evento a la lista local
+                    eventos.append([str(minuto), tipo, str(dorsal), equipo_abrev])
+                    # Agregar evento a la lista global 
+                    eventos_partidos.append([str(minuto), tipo, str(dorsal), equipo_abrev])
                 
                 print(f"Evento registrado: Minuto {minuto}, {tipo}, Dorsal {dorsal}, {equipo_nombre}")
         

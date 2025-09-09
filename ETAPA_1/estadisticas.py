@@ -67,18 +67,27 @@ def calcular_estadisticas_equipo(resultados, abrev, equipos):
     
     return [0, 0, 0, 0, 0, 0, 0, 0]  # Retorna estadísticas vacías si el equipo no se encuentra
 
-def calcular_ranking_goleadores(resultados, jugadores):
-    """Genera el ranking de goleadores ordenado por goles."""
+def calcular_ranking_goleadores(resultados, jugadores, eventos_partidos):
+    """Genera el ranking de goleadores ordenado."""
     
     # Estructura jugador: [0]nombre, [1]dorsal, [2]posicion, [3]equipo, [4]estado, [5]tarjetas_amarillas, [6]fechas_suspension, [7]tipo_sancion
     # - jugador[0] = nombre del jugador
+    # - jugador[1] = dorsal del jugador
     # - jugador[3] = abreviatura del equipo  
     # - jugador[4] = estado ('H' = habilitado, 'S' = suspendido)
+    # Estructura evento: [0]minuto, [1]tipo, [2]dorsal, [3]equipo_abrev
     # ranking: lista de filas con formato -> [0] nombre | [1] equipo | [2] goles
     ranking = []
     for jugador in jugadores:
         if jugador[4] == 'H':
-            goles = random.randint(0, 10)  # simulación de goles
+            goles = 0
+            # Contar goles reales del jugador en todos los eventos registrados
+            for evento in eventos_partidos:
+                if (evento[1] == "Gol" and 
+                    evento[2] == jugador[1] and  # mismo dorsal 
+                    evento[3] == jugador[3]):    # mismo equipo
+                    goles += 1
+            
             ranking.append([jugador[0], jugador[3], goles])
     
     # Ordenar por goles descendente, el signo hace que el jugador con más goles sea el primero

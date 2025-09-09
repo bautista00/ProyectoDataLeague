@@ -10,7 +10,8 @@ def main():
     equipos = []  
     jugadores = []  
     arbitros = []  
-    resultados = [] 
+    resultados = []
+    eventos_partidos = []  # Lista global para almacenar todos los eventos de partidos 
     
     opcion = -1
     while opcion != 0:
@@ -22,12 +23,12 @@ def main():
         elif opcion == 2:
             partidos.crear_fixture(equipos, resultados)
         elif opcion == 3:
-            partidos.actualizar_partidos(resultados, jugadores, equipos)
+            partidos.actualizar_partidos(resultados, jugadores, equipos, eventos_partidos)
         elif opcion == 4:
             tabla = estadisticas.calcular_tabla_posiciones(resultados, equipos)
             reportes.mostrar_tabla_posiciones(tabla)
         elif opcion == 5:
-            ranking = estadisticas.calcular_ranking_goleadores(resultados, jugadores)
+            ranking = estadisticas.calcular_ranking_goleadores(resultados, jugadores, eventos_partidos)
             reportes.mostrar_ranking_goleadores(ranking)
         elif opcion == 6:
             sancionados = estadisticas.calcular_sanciones_vigentes(jugadores)
